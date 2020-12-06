@@ -2,7 +2,6 @@ import pygame
 import Player
 #https://realpython.com/pygame-a-primer/#pygame-concepts
 
-
 #import keybind locals from pygame
 from pygame.locals import (
     K_UP,
