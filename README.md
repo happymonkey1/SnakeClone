@@ -8,7 +8,10 @@ This can be done by entering the following command into the terminal
 
 
 ### 12/12/20 ToDo List
-- [ ] Clone project to local repo
-- [ ] Change background color
-- [ ] Push Commits
-- [ ] Update README
+- [x] Clone project to local repo
+- [x] Change background color
+- [x] Push Commits
+- [x] Update README
+
+# Contributor Matthew
+Written By: Matthew

@@ -22,7 +22,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
 #color of the background of our window
-BACKGROUND_COLOR = (0,0,0)
+BACKGROUND_COLOR = (113,111,133)
 
 #initialize the pygame screen and store it
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
