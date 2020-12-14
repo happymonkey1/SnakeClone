@@ -21,9 +21,6 @@ pygame.init()
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
-#set our target frame rate
-TARGET_FRAMERATE = 60
-
 #color of the background of our window
 BACKGROUND_COLOR = (113,111,133)
 
@@ -38,9 +35,6 @@ game_running = True
 
 #game loop
 while game_running:
-    #clamp the maximum number of frames our game can have per second
-    pygame.time.Clock().tick(TARGET_FRAMERATE)
-
     #fill the screen with our background color
     screen.fill(BACKGROUND_COLOR)
     player.update()

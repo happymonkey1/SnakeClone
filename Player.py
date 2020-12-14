@@ -1,6 +1,6 @@
 #CODE FOR PLAYER
 import pygame
-from pygame.locals import (K_UP, K_DOWN, K_LEFT, K_RIGHT, K_ESCAPE, KEYDOWN, QUIT, K_w, K_a, K_s, K_d)
+from pygame.locals import (K_UP, K_DOWN, K_LEFT, K_RIGHT, K_ESCAPE, KEYDOWN, QUIT,)
 class Player(pygame.sprite.Sprite):
 
     def __init__(self):
@@ -11,7 +11,7 @@ class Player(pygame.sprite.Sprite):
         self.surf.fill((50, 205, 50))
         self.rect = self.surf.get_rect()
         self.speed = 1
-        self.direction = (0,-1)
+        self.direction = [0,-1]
         self.isDead = False
 
     def setWindowDimensions(self, width, height):
@@ -26,17 +26,18 @@ class Player(pygame.sprite.Sprite):
     #determines what direction the snake goes based on the buttons you press
     def controls(self):
         pressed_keys = pygame.key.get_pressed()
-        if pressed_keys[K_UP] or pressed_keys[K_w]:
+        if pressed_keys[K_UP]:
             self.changeDirection(0,-1)
-        elif pressed_keys[K_DOWN] or pressed_keys[K_s]:
+        elif pressed_keys[K_DOWN]:
             self.changeDirection(0,1)
-        elif pressed_keys[K_LEFT] or pressed_keys[K_a]:
+        elif pressed_keys[K_LEFT]:
             self.changeDirection(-1,0)
-        elif pressed_keys[K_RIGHT] or pressed_keys[K_d]:
+        elif pressed_keys[K_RIGHT]:
             self.changeDirection(1,0)
             
     def changeDirection(self, x, y):
-        self.direction = (x,y)
+        self.direction[0] = x
+        self.direction[1] = y
 
     def update(self):
         self.controls()
