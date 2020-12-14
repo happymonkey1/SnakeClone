@@ -10,7 +10,7 @@ class Player(pygame.sprite.Sprite):
         self.surf = pygame.Surface((self.playerWidth, self.playerHeight))
         self.surf.fill((50, 205, 50))
         self.rect = self.surf.get_rect()
-        self.speed = 1
+        self.speed = 100
         self.direction = (0,-1)
         self.isDead = False
 
@@ -38,10 +38,10 @@ class Player(pygame.sprite.Sprite):
     def changeDirection(self, x, y):
         self.direction = (x,y)
 
-    def update(self):
+    def update(self, delta_time):
         self.controls()
-        self.xPosition += self.speed * self.getXDirection()
-        self.yPosition += self.speed * self.getYDirection()
+        self.xPosition += self.speed * self.getXDirection() * delta_time
+        self.yPosition += self.speed * self.getYDirection() * delta_time
         self.ifOnEdgeDie()
 
     def getXDirection(self):

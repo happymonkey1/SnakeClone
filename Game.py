@@ -36,14 +36,28 @@ player.setWindowDimensions(SCREEN_WIDTH, SCREEN_HEIGHT)
 #boolean for whether our game is running
 game_running = True
 
+#init variables for delta time calc
+last_frame_time = 0
+current_frame_time = 0
+delta_time = 0
+
+#store pygame clock 
+clock = pygame.time.Clock()
+
 #game loop
 while game_running:
-    #clamp the maximum number of frames our game can have per second
-    pygame.time.Clock().tick(TARGET_FRAMERATE)
+    #clamp the maximum number of frames our game can have per second and get the frame time
+    clock.tick(TARGET_FRAMERATE)
+
+    #get the current frame time
+    current_frame_time = pygame.time.get_ticks()
+
+    #calculate delta time 
+    delta_time = (current_frame_time - last_frame_time) / 1000
 
     #fill the screen with our background color
     screen.fill(BACKGROUND_COLOR)
-    player.update()
+    player.update(delta_time)
     player.draw(screen)
     
     # Look at every event in the queue
@@ -58,6 +72,9 @@ while game_running:
 
     if player.isDead:
         game_running = False
+
+    #set last frame time
+    last_frame_time = current_frame_time
 pygame.quit()
 #Add snake sprite
 #Add Apples that increase snake length
