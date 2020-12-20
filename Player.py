@@ -1,5 +1,6 @@
 #CODE FOR PLAYER
 import pygame
+import random
 from pygame.locals import (K_UP, K_DOWN, K_LEFT, K_RIGHT, K_ESCAPE, KEYDOWN, QUIT, K_w, K_a, K_s, K_d)
 class Player(pygame.sprite.Sprite):
 
@@ -10,8 +11,8 @@ class Player(pygame.sprite.Sprite):
         self.surf = pygame.Surface((self.playerWidth, self.playerHeight))
         self.surf.fill((50, 205, 50))
         self.rect = self.surf.get_rect()
-        self.speed = 1
-        self.direction = (0,-1)
+        self.speed = 5
+        self.direction = random.choice([(0, -1), (0, 1), (-1, 0), (1, 0)])
         self.isDead = False
 
     def setWindowDimensions(self, width, height):
@@ -53,5 +54,14 @@ class Player(pygame.sprite.Sprite):
     def ifOnEdgeDie(self):
         if self.xPosition + self.playerWidth > self.screenWidth or self.xPosition < 0:
             self.isDead = True
+            self.reset()
         if self.yPosition + self.playerHeight > self.screenHeight or self.yPosition < 0:
             self.isDead = True
+            self.reset()
+    
+    def reset(self):
+        if self.isDead:
+            self.xPosition = self.screenWidth / 2
+            self.yPosition = self.screenHeight / 2
+            self.direction = random.choice([(0, -1), (0, 1), (-1, 0), (1, 0)])
+            self.isDead = False

@@ -55,9 +55,10 @@ while game_running:
     
     #allow any graphical changes to display to screen
     pygame.display.flip()
-
+'''
     if player.isDead:
         game_running = False
+'''
 pygame.quit()
 #Add snake sprite
 #Add Apples that increase snake length
