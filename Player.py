@@ -18,6 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.direction = random.choice([(0, -1), (0, 1), (-1, 0), (1, 0)])
         self.isDead = False
         self.internalClock = 0
+        self.tailBlocks = []
 
     def setWindowDimensions(self, width, height):
         self.screenWidth = width
@@ -26,9 +27,13 @@ class Player(pygame.sprite.Sprite):
         self.yPosition = height / 2
         self.xGridPosition = math.floor(self.xPosition / self.gridWidth)
         self.yGridPosition = math.floor(self.yPosition / self.gridHeight)
+        self.tailBlocks = [(self.xGridPosition, self.yGridPosition)]
 
     def draw(self, screen):
-        screen.blit(self.surf, (self.xGridPosition * self.gridWidth, self.yGridPosition * self.gridHeight))
+        for tail in self.tailBlocks:
+            x = tail[0]
+            y = tail[1]
+            screen.blit(self.surf, (x * self.gridWidth, y * self.gridHeight))
 
     #determines what direction the snake goes based on the buttons you press
     def controls(self):
@@ -51,13 +56,33 @@ class Player(pygame.sprite.Sprite):
         if self.internalClock >= nextMove:
             #self.xPosition += self.speed * self.getXDirection()
             #self.yPosition += self.speed * self.getYDirection()
-            self.xGridPosition += self.getXDirection()
-            self.yGridPosition += self.getYDirection()
+            tail = self.tailBlocks.pop(len(self.tailBlocks) - 1)
+            headGridXPos = 0
+            headGridYPos = 0
+            if len(self.tailBlocks) > 0:
+                headGridXPos = self.tailBlocks[0][0]
+                headGridYPos = self.tailBlocks[0][1]
+            else:
+                headGridXPos = tail[0]
+                headGridXPos = tail[1]
+            moveGridXPos = headGridXPos + self.getXDirection()
+            moveGridYPos = headGridYPos + self.getYDirection()
+            self.xPosition = moveGridXPos * self.gridWidth
+            self.yPosition = moveGridYPos * self.gridHeight
+            self.tailBlocks.insert(0,(moveGridXPos, moveGridYPos))
+            #self.xGridPosition += self.getXDirection()
+            #self.yGridPosition += self.getYDirection()
             self.ifOnEdgeDie()
             self.internalClock -= nextMove
         else:
             self.internalClock += deltaTime
 
+    def updateApple(self, applePosition):
+        if applePosition[0] == self.tailBlocks[0][0] and applePosition[1] and self.tailBlocks[0][1]:
+            self.tailBlocks.insert(0,(applePosition[0], applePosition[1]))
+            return True
+        else:
+            return False
 
     def getXDirection(self):
         return self.direction[0]
@@ -66,10 +91,10 @@ class Player(pygame.sprite.Sprite):
         return self.direction[1]
 
     def ifOnEdgeDie(self):
-        if self.xGridPosition * self.gridWidth > self.screenWidth or self.xGridPosition < 0:
+        if self.xPosition + self.playerWidth > self.screenWidth or self.xPosition < 0:
             self.isDead = True
             self.reset()
-        if self.yGridPosition * self.gridHeight > self.screenHeight or self.yGridPosition < 0:
+        if self.xPosition + self.playerHeight > self.screenHeight or self.yPosition < 0:
             self.isDead = True
             self.reset()
     
@@ -77,6 +102,7 @@ class Player(pygame.sprite.Sprite):
         if self.isDead:
             self.xGridPosition = math.floor(self.screenWidth / 2 / self.gridWidth)
             self.yGridPosition = math.floor(self.screenHeight / 2 / self.gridHeight)
+            self.tailBlocks = [(self.xGridPosition, self.yGridPosition)]
             self.direction = random.choice([(0, -1), (0, 1), (-1, 0), (1, 0)])
             self.internalClock = 0
             self.isDead = False

@@ -65,9 +65,12 @@ while game_running:
     
     #fill the screen with our background color
     screen.fill(BACKGROUND_COLOR)
-    player.update(deltaTime)
-    player.draw(screen)
     screen.blit(appleSurface, (applePosition[0] * gridWidth, applePosition[1] * gridHeight))
+    player.update(deltaTime)
+    if player.updateApple(applePosition):
+        applePosition = randomAppleSpawn()
+    player.draw(screen)
+    
     
     # Look at every event in the queue
     for event in pygame.event.get():
