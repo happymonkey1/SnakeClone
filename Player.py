@@ -16,9 +16,11 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect()
         self.speed = 5
         self.direction = random.choice([(0, -1), (0, 1), (-1, 0), (1, 0)])
+        self.lastDirection = self.direction
         self.isDead = False
         self.internalClock = 0
         self.tailBlocks = []
+        self.maxSpace = gridWidth * gridHeight
 
     def setWindowDimensions(self, width, height):
         self.screenWidth = width
@@ -39,16 +41,21 @@ class Player(pygame.sprite.Sprite):
     def controls(self):
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_UP] or pressed_keys[K_w]:
-            self.changeDirection(0,-1)
+            if self.lastDirection != (0,1) or len(self.tailBlocks) == 1:
+                self.changeDirection(0,-1)
         elif pressed_keys[K_DOWN] or pressed_keys[K_s]:
-            self.changeDirection(0,1)
+            if self.lastDirection != (0,-1) or len(self.tailBlocks) == 1:
+                self.changeDirection(0,1)
         elif pressed_keys[K_LEFT] or pressed_keys[K_a]:
-            self.changeDirection(-1,0)
+            if self.lastDirection != (1,0) or len(self.tailBlocks) == 1:
+                self.changeDirection(-1,0)
         elif pressed_keys[K_RIGHT] or pressed_keys[K_d]:
-            self.changeDirection(1,0)
+            if self.lastDirection != (-1,0) or len(self.tailBlocks) == 1:
+                self.changeDirection(1,0)
             
     def changeDirection(self, x, y):
         self.direction = (x,y)
+        self.lastDirection = self.direction
 
     def update(self, deltaTime):
         self.controls()
@@ -64,7 +71,7 @@ class Player(pygame.sprite.Sprite):
                 headGridYPos = self.tailBlocks[0][1]
             else:
                 headGridXPos = tail[0]
-                headGridXPos = tail[1]
+                headGridYPos = tail[1]
             moveGridXPos = headGridXPos + self.getXDirection()
             moveGridYPos = headGridYPos + self.getYDirection()
             self.xPosition = moveGridXPos * self.gridWidth
@@ -72,14 +79,19 @@ class Player(pygame.sprite.Sprite):
             self.tailBlocks.insert(0,(moveGridXPos, moveGridYPos))
             #self.xGridPosition += self.getXDirection()
             #self.yGridPosition += self.getYDirection()
+            self.checkSelfCollision()
             self.ifOnEdgeDie()
             self.internalClock -= nextMove
         else:
             self.internalClock += deltaTime
 
     def updateApple(self, applePosition):
-        if applePosition[0] == self.tailBlocks[0][0] and applePosition[1] and self.tailBlocks[0][1]:
+        if applePosition[0] == self.tailBlocks[0][0] and applePosition[1] == self.tailBlocks[0][1]:
             self.tailBlocks.insert(0,(applePosition[0], applePosition[1]))
+            if len(self.tailBlocks) == self.maxSpace:
+                print("Congratulations! You Win!")
+                self.isDead = True
+                self.reset()
             return True
         else:
             return False
@@ -94,9 +106,19 @@ class Player(pygame.sprite.Sprite):
         if self.xPosition + self.playerWidth > self.screenWidth or self.xPosition < 0:
             self.isDead = True
             self.reset()
-        if self.xPosition + self.playerHeight > self.screenHeight or self.yPosition < 0:
+        if self.yPosition + self.playerHeight > self.screenHeight or self.yPosition < 0:
             self.isDead = True
             self.reset()
+
+    def checkSelfCollision(self):
+        headPosition = self.tailBlocks[0]
+        for index,tail in enumerate(self.tailBlocks):
+            if index > 0:
+                if headPosition[0] == tail[0] and headPosition[1] == tail[1]:
+                    self.isDead = True
+                    self.reset()
+                    break
+
     
     def reset(self):
         if self.isDead:
@@ -107,6 +129,8 @@ class Player(pygame.sprite.Sprite):
             self.internalClock = 0
             self.isDead = False
 
-    #Add collision/snake eating apple, then set apple to new random positions not on the snake
-    #Spawn extra snake part at the back of the the snake
-    #Make sure all parts of the snake moves not just the head
+#pause game. pause after you win the game too.
+
+#Customization: Head of snake is unique (a black a dot for an eye, etc.)
+#Current score and High score count
+#Game ends after snake reaches maximum length

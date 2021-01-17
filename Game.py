@@ -29,12 +29,18 @@ columns = 20
 gridWidth = SCREEN_WIDTH / rows
 gridHeight = SCREEN_HEIGHT / columns
 
-def randomAppleSpawn():
-    x = math.floor(random.random() * SCREEN_WIDTH / gridWidth)
-    y = math.floor(random.random() * SCREEN_HEIGHT / gridHeight)
-    return (x,y)
+def randomAppleSpawn(tail):
+    while True:
+        x = math.floor(random.random() * SCREEN_WIDTH / gridWidth)
+        y = math.floor(random.random() * SCREEN_HEIGHT / gridHeight)
+        filledPosition = False
+        for block in tail:
+            if x == block[0] and y == block[1]:
+                filledPosition = True
+        if not filledPosition:
+            return (x,y)
 
-applePosition = randomAppleSpawn()
+applePosition = randomAppleSpawn([])
 appleSurface = pygame.Surface((gridHeight, gridHeight))
 appleSurface.fill((255,0,0))
 #set our target frame rate
@@ -68,7 +74,7 @@ while game_running:
     screen.blit(appleSurface, (applePosition[0] * gridWidth, applePosition[1] * gridHeight))
     player.update(deltaTime)
     if player.updateApple(applePosition):
-        applePosition = randomAppleSpawn()
+        applePosition = randomAppleSpawn(player.tailBlocks)
     player.draw(screen)
     
     
@@ -89,9 +95,4 @@ while game_running:
         game_running = False
 '''
 pygame.quit()
-#Add snake sprite
-#Add Apples that increase snake length
-#Border than kills snake
-#Snake dies on impact with itself
-#End game if snake reaches certain length
-#Grid based
+
