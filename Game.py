@@ -19,6 +19,8 @@ from pygame.locals import (
 #must be called to initialize code for pygame
 pygame.init()
 
+gameFont = pygame.font.SysFont("Comic Sans MS", 30)
+
 #store the width and height of our window
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
@@ -76,7 +78,10 @@ while game_running:
     if player.updateApple(applePosition):
         applePosition = randomAppleSpawn(player.tailBlocks)
     player.draw(screen)
-    
+    fontSurface = gameFont.render("Current Score: " + str(player.currentScore), False, (0, 0, 0))
+    screen.blit(fontSurface, (8, 5))
+    highScoreSurface = gameFont.render("High Score: " + str(player.highScore), False, (0, 0, 0))
+    screen.blit(highScoreSurface, (8, 40))
     
     # Look at every event in the queue
     for event in pygame.event.get():

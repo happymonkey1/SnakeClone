@@ -2,7 +2,7 @@
 import pygame
 import random
 import math
-from pygame.locals import (K_UP, K_DOWN, K_LEFT, K_RIGHT, K_ESCAPE, KEYDOWN, QUIT, K_w, K_a, K_s, K_d)
+from pygame.locals import (K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE, K_ESCAPE, KEYDOWN, QUIT, K_w, K_a, K_s, K_d)
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, gridWidth, gridHeight):
@@ -21,6 +21,9 @@ class Player(pygame.sprite.Sprite):
         self.internalClock = 0
         self.tailBlocks = []
         self.maxSpace = gridWidth * gridHeight
+        self.pauseGame = False
+        self.currentScore = 0
+        self.readHighScore()
 
     def setWindowDimensions(self, width, height):
         self.screenWidth = width
@@ -52,6 +55,8 @@ class Player(pygame.sprite.Sprite):
         elif pressed_keys[K_RIGHT] or pressed_keys[K_d]:
             if self.lastDirection != (-1,0) or len(self.tailBlocks) == 1:
                 self.changeDirection(1,0)
+        elif pressed_keys[K_SPACE]:
+            self.pauseGame = not self.pauseGame
             
     def changeDirection(self, x, y):
         self.direction = (x,y)
@@ -59,6 +64,8 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, deltaTime):
         self.controls()
+        if self.pauseGame:
+            return
         nextMove = 1 / self.speed
         if self.internalClock >= nextMove:
             #self.xPosition += self.speed * self.getXDirection()
@@ -88,6 +95,10 @@ class Player(pygame.sprite.Sprite):
     def updateApple(self, applePosition):
         if applePosition[0] == self.tailBlocks[0][0] and applePosition[1] == self.tailBlocks[0][1]:
             self.tailBlocks.insert(0,(applePosition[0], applePosition[1]))
+            self.currentScore += 1
+            if self.currentScore > self.highScore:
+                self.highScore = self.currentScore
+                self.saveHighScore()
             if len(self.tailBlocks) == self.maxSpace:
                 print("Congratulations! You Win!")
                 self.isDead = True
@@ -95,6 +106,19 @@ class Player(pygame.sprite.Sprite):
             return True
         else:
             return False
+    
+    def saveHighScore(self):
+        f = open("highScore.txt", "w")
+        f.write(str(self.highScore))
+        f.close()
+
+    def readHighScore(self):
+        try:
+            f = open("highScore.txt", "r")
+            self.highScore = int(f.read().strip())
+            f.close()
+        except:
+            self.highScore = 0
 
     def getXDirection(self):
         return self.direction[0]
@@ -118,7 +142,6 @@ class Player(pygame.sprite.Sprite):
                     self.isDead = True
                     self.reset()
                     break
-
     
     def reset(self):
         if self.isDead:
@@ -128,9 +151,7 @@ class Player(pygame.sprite.Sprite):
             self.direction = random.choice([(0, -1), (0, 1), (-1, 0), (1, 0)])
             self.internalClock = 0
             self.isDead = False
-
-#pause game. pause after you win the game too.
+            self.pauseGame = False
+            self.currentScore = 0
 
 #Customization: Head of snake is unique (a black a dot for an eye, etc.)
-#Current score and High score count
-#Game ends after snake reaches maximum length
